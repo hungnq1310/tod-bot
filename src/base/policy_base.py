@@ -65,9 +65,29 @@ class PolicyBase(ABC):
             return rows
         except:
             raise Exception("Cannot connect to database")
+        
+    def generate_query(self, 
+                       domain: str,
+                       constraint_to_search: Dict[str, Any], 
+                       slot_to_query_dif: str = None,
+                       negate_current_result: Dict[str, Any] = {}
+                       ) -> str:
+        query = f"SELECT * FROM {domain} WHERE "
+        conditions = []
+        for slot, value in constraint_to_search.items():
+            value = "'{}'".format(value) if type(value) == str else value
+            condition = f"{slot} = {value}"
+            conditions.append(condition)
+        # when user  need another after negate the current result from db and
+        if not negate_current_result:
+            if not slot_to_query_dif:
+                print("Need to have `slot_to_query_dif` for getting the other results")
+            value = "'{}'".format(negate_current_result.get(slot_to_query_dif))
+            condition = f"{slot} != {value}"
+            conditions.append(condition)
+        query += " AND ".join(conditions)
+        print("---query: ", query)
+        return query
 
-    @abstractmethod
-    def generate_query(self):
-        raise NotImplementedError
-    
+
     
