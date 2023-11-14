@@ -1,28 +1,25 @@
 import logging
 from typing import Dict, Any
 
-
 from configs.config import Policy_Config
 from base.policy_base import PolicyBase
-from models.dst import DialogueStateTracker
 
 
 
 class PolicyHotel(PolicyBase):
     def __init__(self, 
                  config: Policy_Config, 
-                 policy_domain: str,
+                 policy_constraint_hotels_1: Dict[str, Any],
                  ontology: Dict[str, str]):
         super().__init__(config=config,
                          ontology=ontology
                          )
-        self.policy_domain = policy_domain
         # define needed slots for search and book
         self.database_slots = ["hotel_name", "destination", "street_address", "number_of_rooms_available",
                                "star_rating", "price_per_night", "has_wifi", "phone_number"]
-        self.required_slots_search = ["destination"]
-        self.required_slots_book = ["hotel_name", "check_in_date", "number_of_days", "destination", "number_of_rooms"]
-        self.required_slots_info = ["hotel_name", "destination"]
+        self.required_slots_search = policy_constraint_hotels_1.get("required_slots_search")
+        self.required_slots_book = policy_constraint_hotels_1.get("required_slots_book")
+        self.required_slots_info = policy_constraint_hotels_1.get("required_slots_info")
 
         # manage search results
         self.count_search = 0
